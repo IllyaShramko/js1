@@ -6,8 +6,8 @@ const app = express();
 const PORT = 8000;
 const HOST = "localhost";
 
-function getDate() {
-    return moment().format("YYYY/MM/DD HH:mm:ss");
+function getTime() {
+    return moment().format("HH:mm:ss");
 }
 
 app.get("/", (req, res) => {
@@ -15,7 +15,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/timestamp", (req, res) => {
-    const currentTime = getDate();
+    const currentTime = getTime();
     res.json({ timestamp: currentTime });
 });
 
