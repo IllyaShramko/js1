@@ -45,16 +45,16 @@ app.get("/posts", (req, res) => {
         take = null
     }
 
-    let result = posts
+    let posts_sorted = posts
 
     if (skip > 0) {
-        result = result.slice(skip)
+        posts_sorted = posts_sorted.slice(skip)
     }
     if (take !== null && take > 0) {
-        result = result.slice(0, take)
+        posts_sorted = posts_sorted.slice(0, take)
     }
 
-    res.json(result)
+    res.status(200).json(posts_sorted)
 })
 
 app.get("/posts/:id",(req, res)=>{
