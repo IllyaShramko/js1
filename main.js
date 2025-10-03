@@ -2,6 +2,7 @@ const path = require("path")
 const fs = require("fs")
 const express = require('express')
 const moment = require("moment");
+const fsPromises = require("fs/promises")
 
 const postsPath = path.join(__dirname, "posts.json")
 const posts = JSON.parse(fs.readFileSync(postsPath, "utf-8"))
@@ -10,6 +11,7 @@ function getTimeDate() {
     return moment().format("YYYY/MM/DD HH:mm:ss");
 }
 const app = express();
+app.use(express.json())
 
 const PORT = 8000;
 const HOST = "localhost";
@@ -74,6 +76,39 @@ app.get("/posts/:id",(req, res)=>{
 
     res.json(post)
 })
+
+app.post("/posts", async (req, res) => {
+    console.log(req.body)
+    const body = req.body
+    if (!body) {
+        res.status(422).json("Body is required.")
+        return
+    }
+    const newPost = { ...body, id: posts.length + 1, likes: 0 }
+    if (!newPost.name) {
+        res.status(422).json("name is required.")
+        return
+    }
+    if (!newPost.description) {
+        res.status(422).json("description is required.")
+        return
+    }
+    if (!newPost.image) {
+        res.status(422).json("image url is required.")
+        return
+    }
+
+    try{
+        posts.push(newPost)
+        await fsPromises.writeFile(postsPath, JSON.stringify(posts, null, 4))
+        console.log(newPost)
+        res.status(201).json(newPost)
+    } catch (error){
+        console.log(error)
+        res.status(500).json("Post creation error")
+    }
+})
+
 app.listen(PORT, HOST, () => {
     console.log(`Server started on http://${HOST}:${PORT}`);
 });
