@@ -29,7 +29,7 @@ const PostService = {
     },
     createPost: async (data) => {
         try{
-            const newPost = {...data, id: posts}
+            const newPost = {...data, id: posts.length + 1, likes: 0}
             posts.push(newPost)
             await fsPromises.writeFile(postsPath, JSON.stringify(posts, null, 4))
             console.log(newPost)

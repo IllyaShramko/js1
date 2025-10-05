@@ -66,7 +66,7 @@ const PostController = {
             res.status(422).json("image url is required.")
             return
         }
-        const newPost = PostService.createPost(body)
+        const newPost = await PostService.createPost({...body})
         if (!newPost) {
             res.status(500).json("Post creation error")
         }
