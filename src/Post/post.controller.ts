@@ -1,13 +1,14 @@
-const PostService = require("./post.service")
+import { Request, Response } from "express"
+import { PostService } from "./post.service"
 
-const PostController = {
-    hello: (req, res) => {
+export const PostController = {
+    hello: (req: Request, res: Response) => {
         res.json("hello");
     },
-    getTimeDate: (req, res) => {
+    getTimeDate: (req: Request, res: Response) => {
         res.json({ timestamp: PostService.getTimeDate()})
     },
-    getAllPosts: (req, res) => {
+    getAllPosts: (req: Request, res: Response) => {
         let skip
         let take
 
@@ -33,7 +34,12 @@ const PostController = {
 
         res.status(200).json(posts_sorted)
     },
-    getPostById: (req, res) => {
+    getPostById: (req: Request, res: Response) => {
+        
+        if (!req.params.id){
+            res.status(400).json("id is required");
+            return
+        }
         const id = +req.params.id
         if (isNaN(id)){
             res.status(400).json("id must be an integer");
@@ -47,7 +53,7 @@ const PostController = {
 
         res.status(200).json(post)
     },
-    createPost: async (req, res) => {
+    createPost: async (req: Request, res: Response) => {
         console.log(req.body)
         const body = req.body
         if (!body) {
@@ -74,4 +80,3 @@ const PostController = {
     }
     
 }
-module.exports = PostController
