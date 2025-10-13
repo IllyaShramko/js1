@@ -13,4 +13,6 @@ PostRouter.get("/posts/:id", PostController.getPostById);
 
 PostRouter.post("/posts", PostController.createPost);
 
+PostRouter.put("/posts/:id", PostController.update)
+
 export { PostRouter }

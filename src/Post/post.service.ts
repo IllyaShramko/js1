@@ -2,22 +2,17 @@ import moment from 'moment'
 import path from 'path'
 import fs from 'fs'
 import fsPromises from 'fs/promises'
+import { Post, PostServiceContract } from './post.types'
 
 
 const postsPath = path.join(__dirname, "posts.json");
-const posts: {
-    id: number,
-    name: string,
-    description: string,
-    image: string,
-    likes: number
-}[] = JSON.parse(fs.readFileSync(postsPath, "utf-8"));
+const posts: Post[] = JSON.parse(fs.readFileSync(postsPath, "utf-8"));
 
-export const PostService = {
+export const PostService: PostServiceContract = {
     getTimeDate: () => {
         return moment().format("YYYY/MM/DD HH:mm:ss");
     },
-    getAllPosts: (skip: number, take: number | null) => {
+    getAllPosts: (skip, take) => {
         let posts_sorted = posts
 
         if (skip > 0) {
@@ -28,13 +23,13 @@ export const PostService = {
         }
         return posts_sorted
     },
-    getById: (id: number) => {
+    getById: (id) => {
         const post = posts.find((pr)=>{
             return pr.id === id
         })
         return post
     },
-    createPost: async (data: {name: string, description: string, image: string}) => {
+    createPost: async (data) => {
         try{
             const newPost = {...data, id: posts.length + 1, likes: 0}
             posts.push(newPost)
@@ -45,5 +40,22 @@ export const PostService = {
             console.log(error)
             return null
         }
-    }
+    },
+    async update(id, data) {
+        const post = this.getById(id)
+        if (!post) {
+            return null
+        }
+
+        try {
+            // {...post, {name: "Super post"}}
+            const updatedPost = { ...post, ...data }
+            posts.splice(id - 1, 1, updatedPost)
+            await fsPromises.writeFile(postsPath, JSON.stringify(posts, null, 4))
+            return updatedPost
+        } catch (error) {
+            console.log(error)
+            return null
+        }
+    },
 }
