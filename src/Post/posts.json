@@ -1,7 +1,7 @@
 [
     {
         "id": 1,
-        "name": "Pugs",
+        "name": "Pugs111",
         "description": "cats. cute cats",
         "image": "https://lifelineanimal.org/wp-content/uploads/2021/03/foster-cats-header.jpg",
         "likes": 0
@@ -39,6 +39,13 @@
         "description": "Coolest descripti1on",
         "image": "ssss1111",
         "id": 6,
+        "likes": 0
+    },
+    {
+        "name": "Pugs111",
+        "description": "Coolest descripti1on111",
+        "image": "ssss",
+        "id": 7,
         "likes": 0
     }
 ]

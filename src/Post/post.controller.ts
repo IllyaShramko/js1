@@ -1,14 +1,13 @@
 import { Request, Response } from "express"
 import { PostService } from "./post.service"
+import { PostControllerContract } from "./post.types"
 
-export const PostController = {
-    hello: (req: Request, res: Response) => {
-        res.json("hello");
-    },
-    getTimeDate: (req: Request, res: Response) => {
+
+export const PostController: PostControllerContract = {
+    getTimeDate: (req, res) => {
         res.json({ timestamp: PostService.getTimeDate()})
     },
-    getAllPosts: (req: Request, res: Response) => {
+    getAllPosts: (req, res) => {
         let skip
         let take
 
@@ -34,7 +33,7 @@ export const PostController = {
 
         res.status(200).json(posts_sorted)
     },
-    getPostById: (req: Request, res: Response) => {
+    getById: (req, res) => {
         
         if (!req.params.id){
             res.status(400).json("id is required");
@@ -53,7 +52,7 @@ export const PostController = {
 
         res.status(200).json(post)
     },
-    createPost: async (req: Request, res: Response) => {
+    createPost: async (req, res) => {
         console.log(req.body)
         const body = req.body
         if (!body) {
@@ -78,7 +77,7 @@ export const PostController = {
         }
         res.status(201).json(newPost)
     },
-    async update(req: Request, res: Response) {
+    async update(req, res) {
         const id = req.params.id
         if (!id){
             res.status(400).json("id is required");
