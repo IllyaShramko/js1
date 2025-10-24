@@ -26,12 +26,12 @@ export const PostController: PostControllerContract = {
                 return res.status(400).json({ error: "take must be a number" })
             }
         } else {
-            take = null
+            take = undefined
         }
 
-        let posts_sorted = PostService.getAllPosts(skip, take)
-
-        res.status(200).json(posts_sorted)
+        PostService.getAllPosts(skip, take).then((posts_sorted) => {
+            res.status(200).json(posts_sorted)
+        })
     },
     getById: (req, res) => {
         
@@ -44,13 +44,14 @@ export const PostController: PostControllerContract = {
             res.status(400).json("id must be an integer");
             return;
         }
-        const post = PostService.getById(id)
-        if (!post){
-            res.status(404).json("post not found")
-            return;
-        }
+        PostService.getById(id).then((post)=>{
+            if (!post){
+                res.status(404).json("post not found")
+                return;
+            }
+            res.status(200).json(post)
+        })
 
-        res.status(200).json(post)
     },
     createPost: async (req, res) => {
         console.log(req.body)
@@ -67,7 +68,7 @@ export const PostController: PostControllerContract = {
             res.status(422).json("description is required.")
             return
         }
-        if (!body.image) {
+        if (!body.imageUrl) {
             res.status(422).json("image url is required.")
             return
         }
@@ -88,10 +89,6 @@ export const PostController: PostControllerContract = {
             return;
         }
         const body = req.body
-        if (body.id){
-            res.status(422).json("body must not consist id");
-            return
-        }
         const post = await PostService.update(+id, body)
         if (!post) {
             res.status(500).json("Post update error")
@@ -100,5 +97,26 @@ export const PostController: PostControllerContract = {
         res.status(200).json(post)
 
     },
-    
+    async delete(req, res) {
+        const id = req.params.id
+        if (!id){
+            res.status(400).json("id is required");
+            return
+        }
+        if (isNaN(+id)){
+            res.status(400).json("id must be an integer");
+            return;
+        }
+        await PostService.delete(+id).then((result) => {
+            if (result === "not found") {
+                res.status(404).json("Post not found")
+                return
+            }
+            else if (!result) {
+                res.status(500).json("Post deletion error")
+                return
+            }
+            res.status(200).json(result)
+        })
+    }
 }

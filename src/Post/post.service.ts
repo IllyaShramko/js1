@@ -2,8 +2,10 @@ import moment from 'moment'
 import path from 'path'
 import fs from 'fs'
 import fsPromises from 'fs/promises'
-import { Post, PostServiceContract } from './post.types'
+import { Post, PostServiceContract, PostWithTags } from './post.types'
+import { PrismaClient } from '../generated/prisma'
 
+const client = new PrismaClient()
 
 const postsPath = path.join(__dirname, "posts.json");
 const posts: Post[] = JSON.parse(fs.readFileSync(postsPath, "utf-8"));
@@ -12,50 +14,78 @@ export const PostService: PostServiceContract = {
     getTimeDate: () => {
         return moment().format("YYYY/MM/DD HH:mm:ss");
     },
-    getAllPosts: (skip, take) => {
-        let posts_sorted = posts
-
+    getAllPosts: async (skip, take) => {
+        let posts_sorted = await client.post.findMany({})
         if (skip > 0) {
             posts_sorted = posts_sorted.slice(skip)
         }
-        if (take !== null && take > 0) {
+        if (take && take > 0) {
             posts_sorted = posts_sorted.slice(0, take)
         }
         return posts_sorted
     },
-    getById: (id) => {
-        const post = posts.find((pr)=>{
-            return pr.id === id
-        })
-        return post
+    getById: async (id) => {
+        try {
+            const result = await client.post.findUnique({
+                where: { id }
+            })
+            console.log("getById result:", result)
+            return result
+        } catch (error) {
+            console.error("Error in getById:", error)
+            return null
+        }
     },
     createPost: async (data) => {
-        try{
-            const newPost = {...data, id: posts.length + 1, likes: 0}
-            posts.push(newPost)
-            await fsPromises.writeFile(postsPath, JSON.stringify(posts, null, 4))
-            console.log(newPost)
+        try {
+            const newPost = await client.post.create({
+                data: {
+                    likes: 0,
+                    name: data.name,
+                    description: data.description,
+                    imageUrl: data.imageUrl || null,
+                }
+            })
             return newPost
-        } catch (error){
-            console.log(error)
+        } catch (error) {
+            console.error("Error in createPost:", error)
             return null
         }
     },
     async update(id, data) {
         const post = this.getById(id)
         if (!post) {
+            console.log("Post not found")
             return null
         }
-
         try {
-            // {...post, {name: "Super post"}}
-            const updatedPost = { ...post, ...data }
-            posts.splice(id - 1, 1, updatedPost)
-            await fsPromises.writeFile(postsPath, JSON.stringify(posts, null, 4))
+            const updatedPost = await client.post.update({
+                where: { id },
+                data: {
+                    ...post,
+                    ...data
+                }
+            })
             return updatedPost
         } catch (error) {
-            console.log(error)
+            console.error("Error in update:", error)
             return null
         }
     },
+    async delete(id) {
+        try {
+            const post = await this.getById(id)
+            if (!post) {
+                console.log("Post not found")
+                return "not found"
+            }
+            const deleted = await client.post.delete({
+                where: { id }
+            })
+            return deleted
+        } catch (error) {
+            console.error("Error in delete:", error)
+            return null
+        }
+    }
 }
