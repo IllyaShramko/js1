@@ -5,11 +5,11 @@ export type Post = Prisma.PostGetPayload<{}>
 
 export type PostWithTags = Prisma.PostGetPayload<{include: { PostTag: { include: { tag: true } } }}>
 
-export type CreatePost = Prisma.PostCreateInput
-export type CreatePostChecked = Required<Pick<CreatePost, 'name' | 'description'>> & {imageUrl?: string}
+export type CreatePost = Prisma.PostUncheckedCreateInput
+export type CreatePostChecked = Prisma.PostCreateInput
 
-export type UpdatePost = Prisma.PostUpdateInput
-export type UpdatePostChecked = Partial<CreatePostChecked>
+export type UpdatePost = Prisma.PostUncheckedUpdateInput
+export type UpdatePostChecked = Prisma.PostUpdateInput
 
 export interface PostServiceContract {
     getTimeDate: () => string
