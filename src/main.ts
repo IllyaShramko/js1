@@ -1,10 +1,11 @@
 import express from 'express'
 import { PostRouter } from './Post/post.routes'
-
+import { TagsRouter } from './Tag/tag.routes'
 const app: express.Express = express()
 
 app.use(express.json())
 app.use(PostRouter)
+app.use(TagsRouter)
 
 const PORT = 8000;
 const HOST = "localhost";

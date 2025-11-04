@@ -7,50 +7,40 @@ export const PostController: PostControllerContract = {
     getTimeDate: (req, res) => {
         res.json({ timestamp: PostService.getTimeDate()})
     },
-    getAllPosts: (req, res) => {
-        let skip
-        let take
-
-        if (req.query.skip !== undefined) {
-            skip = +req.query.skip
+    getAllPosts: async (req, res) => {
+        let skip: any = req.query.skip
+        if (skip) {
+            skip = +skip
             if (isNaN(skip)) {
-                return res.status(400).json({ error: "skip must be a number" })
+                res.status(400).json()
+                return
             }
-        } else {
-            skip = 0
         }
-
-        if (req.query.take !== undefined) {
-            take = +req.query.take
+        let take: any = req.query.take
+        if (take) {
+            take = +take
             if (isNaN(take)) {
-                return res.status(400).json({ error: "take must be a number" })
+                res.status(400).json()
+                return
             }
-        } else {
-            take = undefined
         }
-
-        PostService.getAllPosts(skip, take).then((posts_sorted) => {
-            res.status(200).json(posts_sorted)
+        PostService.getAllPosts(skip, take).then((posts) => {
+            res.status(200).json(posts)
         })
     },
     getById: (req, res) => {
-        
         if (!req.params.id){
             res.status(400).json("id is required");
             return
-        }
+        } 
         const id = +req.params.id
+        console.log(id)
         if (isNaN(id)){
             res.status(400).json("id must be an integer");
             return;
         }
-        PostService.getById(id).then((post)=>{
-            if (!post){
-                res.status(404).json("post not found")
-                return;
-            }
-            res.status(200).json(post)
-        })
+      
+        res.json(PostService.getById(id))
 
     },
     createPost: async (req, res) => {
@@ -89,12 +79,13 @@ export const PostController: PostControllerContract = {
             return;
         }
         const body = req.body
-        const post = await PostService.update(+id, body)
-        if (!post) {
-            res.status(500).json("Post update error")
-            return
-        }
-        res.status(200).json(post)
+        await PostService.update(+id, body).then((post) => {
+            if (!post) {
+                res.status(500).json("Post update error")
+                return
+            }
+            res.status(200).json(post)
+        })
 
     },
     async delete(req, res) {
