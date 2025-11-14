@@ -1,6 +1,9 @@
 import { Request, Response } from "express"
 import { PostService } from "./post.service"
 import { PostControllerContract } from "./post.types"
+import { env } from "../config/env"
+import { TokenExpiredError, verify } from "jsonwebtoken"
+import { userService } from "../User/user.service"
 
 
 export const PostController: PostControllerContract = {
@@ -45,6 +48,17 @@ export const PostController: PostControllerContract = {
     },
     createPost: async (req, res) => {
         console.log(req.body)
+        const Authorization = req.headers.authorization
+        if (!Authorization) {
+            res.status(401).json({message: "authorization is required"})
+            return
+        }
+        const [type, token] = Authorization.split(" ")
+        console.log(type, token)
+        if (type != "Bearer" || !token) {
+            res.status(401).json({message: "wrong format autharization"})
+            return
+        }
         const body = req.body
         if (!body) {
             res.status(422).json("Body is required.")
@@ -62,11 +76,30 @@ export const PostController: PostControllerContract = {
             res.status(422).json("image url is required.")
             return
         }
-        const newPost = await PostService.createPost({...body})
-        if (!newPost) {
-            res.status(500).json("Post creation error")
+        try {
+            const payload = verify(token, env.JWT_SECRET_KEY)
+            if (typeof payload == "string") {
+                res.status(401).json({message: "Token wrong format"})
+                return
+            }
+            console.log(body)
+            if (!payload.userId) {
+                res.status(401).json({message: "User ID not found in token"})
+                return
+            }
+            const newPost = await PostService.createPost({...body, createdById: payload.userId})
+            if (!newPost) {
+                res.status(404).json({message: "Post creation error"})
+                return
+            }
+            res.status(200).json(newPost)
+        } catch (error) {
+            if (error instanceof TokenExpiredError) {
+                res.status(401).json({message: "You need to reload your token. It expired"})
+                return
+            }
+            res.status(500).json({message: "Internal server error"})
         }
-        res.status(201).json(newPost)
     },
     async update(req, res) {
         const id = req.params.id

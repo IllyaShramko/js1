@@ -15,7 +15,7 @@ export interface PostServiceContract {
     getTimeDate: () => string
     getAllPosts: (skip?: number, take?: number) => Promise<Post[]>
     getById: (id: number) => Promise<Post | null>
-    createPost: (data: CreatePostChecked) => Promise<Post | null>
+    createPost: (data: CreatePost) => Promise<Post | null>
     update: (id: number, data: UpdatePostChecked) => Promise<Post | null>
     delete: (id: number) => Promise<Post | null | string>
 }
