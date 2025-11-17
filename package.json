@@ -4,7 +4,9 @@
   "main": "js1.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node ./src/main.ts"
+    "start": "ts-node ./src/main.ts",
+    "init-db": "prisma migrate dev --name init",
+    "format-db": "prisma format"
   },
   "author": "",
   "license": "ISC",
@@ -13,6 +15,7 @@
     "@prisma/client": "^6.17.1",
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
+    "bcryptjs": "^3.0.3",
     "envalid": "^8.1.1",
     "express": "^5.1.0",
     "fs": "^0.0.1-security",

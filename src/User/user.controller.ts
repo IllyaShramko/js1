@@ -23,6 +23,9 @@ export const UserController: UserControllerContract = {
         if (user === 'INVALID_CREDENTIALS'){ 
             res.status(404).json("User not found")
             return
+        } else if (user === 'INVALID_PASSWORD'){
+            res.status(401).json("Invalid password")
+            return
         } else {
             res.status(200).json(user)
             return

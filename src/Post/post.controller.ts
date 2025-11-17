@@ -77,27 +77,14 @@ export const PostController: PostControllerContract = {
             return
         }
         try {
-            const payload = verify(token, env.JWT_SECRET_KEY)
-            if (typeof payload == "string") {
-                res.status(401).json({message: "Token wrong format"})
-                return
-            }
-            console.log(body)
-            if (!payload.userId) {
-                res.status(401).json({message: "User ID not found in token"})
-                return
-            }
-            const newPost = await PostService.createPost({...body, createdById: payload.userId})
+            const userId = res.locals.userId
+            const newPost = await PostService.createPost({...body, createdById: userId})
             if (!newPost) {
                 res.status(404).json({message: "Post creation error"})
                 return
             }
             res.status(200).json(newPost)
         } catch (error) {
-            if (error instanceof TokenExpiredError) {
-                res.status(401).json({message: "You need to reload your token. It expired"})
-                return
-            }
             res.status(500).json({message: "Internal server error"})
         }
     },

@@ -11,8 +11,6 @@ export type registerForm = {
     secondName: string,
     avatar?: string
 }
-
-
 export interface UserControllerContract {
     login: (req: Request<object, string, {email: string, password: string}>, res: Response<string>) => void,
     register: (req: Request<object, string, registerForm>, res: Response<string>) => void

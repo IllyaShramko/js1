@@ -1,5 +1,6 @@
 import express from 'express'
 import { PostController } from './post.controller'
+import { authMiddleware } from '../middlewares/auth.middleware'
 
 const PostRouter: express.Router = express.Router()
 
@@ -9,10 +10,9 @@ PostRouter.get("/posts", PostController.getAllPosts);
 
 PostRouter.get("/posts/:id", PostController.getById);
 
-PostRouter.post("/posts", PostController.createPost);
+PostRouter.post("/posts", authMiddleware, PostController.createPost);
 
-PostRouter.put("/posts/:id", PostController.update)
+PostRouter.put("/posts/:id", authMiddleware, PostController.update)
 
-PostRouter.delete("/posts/:id", PostController.delete)
-
+PostRouter.delete("/posts/:id", authMiddleware, PostController.delete)
 export { PostRouter }
