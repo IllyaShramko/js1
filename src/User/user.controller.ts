@@ -41,11 +41,7 @@ export const UserController: UserControllerContract = {
         if (!body.firstName){
             res.status(422).json('firstName is required.')
             return
-        }
-        if (!body.secondName){
-            res.status(422).json('secondName is required.')
-            return
-        }
+        }   
         if (!body.email){
             res.status(422).json('email is required.')
             return

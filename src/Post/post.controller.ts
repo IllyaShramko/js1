@@ -47,18 +47,6 @@ export const PostController: PostControllerContract = {
 
     },
     createPost: async (req, res) => {
-        console.log(req.body)
-        const Authorization = req.headers.authorization
-        if (!Authorization) {
-            res.status(401).json({message: "authorization is required"})
-            return
-        }
-        const [type, token] = Authorization.split(" ")
-        console.log(type, token)
-        if (type != "Bearer" || !token) {
-            res.status(401).json({message: "wrong format autharization"})
-            return
-        }
         const body = req.body
         if (!body) {
             res.status(422).json("Body is required.")
@@ -70,10 +58,6 @@ export const PostController: PostControllerContract = {
         }
         if (!body.description) {
             res.status(422).json("description is required.")
-            return
-        }
-        if (!body.imageUrl) {
-            res.status(422).json("image url is required.")
             return
         }
         try {

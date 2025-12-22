@@ -10,4 +10,7 @@ export const TagService: TagServiceContract = {
     getById: async (id) => {
         return TagRepository.getById(id)
     },
+    createTag: async (name) => {
+        return TagRepository.createTag(name)
+    }
 }

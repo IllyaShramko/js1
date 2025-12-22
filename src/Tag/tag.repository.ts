@@ -38,4 +38,7 @@ export const TagRepository: TagRepositoryContract = {
             throw error
         }
     },
+    async createTag(name) {
+        return await PrismaClient.tag.create({data: {name}})
+    }
 }

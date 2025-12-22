@@ -38,4 +38,25 @@ export const TagController: TagControllerContract = {
         res.json(TagService.getById(id))
 
     },
+    createTag: async (req, res) => {
+        const body = req.body
+        if (!body) {
+            res.status(422).json("Body is required.")
+            return
+        }
+        if (!body.name) {
+            res.status(422).json("name is required.")
+            return
+        }
+        try {
+            const newTag = await TagService.createTag(body.name)
+            if (!newTag) {
+                res.status(500).json("Tag creation failed.")
+                return
+            }
+            res.status(201).json(newTag)
+        } catch (error) {
+            res.status(500).json("Internal server error.")
+        }
+    }
 }

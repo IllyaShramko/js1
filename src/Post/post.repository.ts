@@ -7,7 +7,8 @@ export const PostRepository: PostRepositoryContract = {
     async getById(id) {
         try {
             const product = await PrismaClient.post.findUnique({
-                where:{id: id}
+                where:{id: id},
+                include: { tags: { include: { tag: true } } }
             })
             return product
             
@@ -16,27 +17,12 @@ export const PostRepository: PostRepositoryContract = {
         }
     },
     async getAllPosts(take, skip) {
-        if (take && !skip){
-            const products = await PrismaClient.post.findMany({
-                take: take,
-            })
-            return products
-        } else if (!take && skip) {
-            const products = await PrismaClient.post.findMany({
-                skip: skip,
-            })
-            return products
-        } else if (take && skip) {
-            const products = await PrismaClient.post.findMany({
-                skip: skip,
-                take: take
-            })
-            return products
-        }
-        else{
-            const products = await PrismaClient.post.findMany({}) 
-            return products
-        }
+        const products = await PrismaClient.post.findMany({
+            skip: skip,
+            take: take,
+            include: { tags: { include: { tag: true } } }
+        })
+        return products
     },
     async createPost(data) {
         return await PrismaClient.post.create({data})
