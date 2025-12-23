@@ -15,4 +15,11 @@ PostRouter.post("/posts", authMiddleware, PostController.createPost);
 PostRouter.put("/posts/:id", authMiddleware, PostController.update)
 
 PostRouter.delete("/posts/:id", authMiddleware, PostController.delete)
+
+PostRouter.put("/posts/:postId/likes/:userId", authMiddleware, PostController.likePost)
+
+PostRouter.delete("/posts/:postId/likes/:userId", authMiddleware, PostController.unlikePost)
+
+PostRouter.post("/posts/:postId/comments", authMiddleware, PostController.commentPost)
+
 export { PostRouter }

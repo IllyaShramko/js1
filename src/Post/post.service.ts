@@ -11,8 +11,8 @@ export const PostService: PostServiceContract = {
     getAllPosts: async (skip, take) => {
         return PostRepository.getAllPosts(take, skip)
     },
-    getById: async (id) => {
-        return PostRepository.getById(id)
+    getById: async (id, includeArray) => {
+        return PostRepository.getById(id, includeArray)
     },
     createPost: async (data, tagsIds) => {
         return PostRepository.createPost(data, tagsIds)
@@ -22,5 +22,14 @@ export const PostService: PostServiceContract = {
     },
     async delete(id) {
         return PostRepository.delete(id)
+    },
+    async commentPost(postId, userId, content) {
+        return PostRepository.commentPost(postId, userId, content)
+    },
+    async likePost(postId, userId) {
+        return PostRepository.likePost(postId, userId)
+    },
+    async unlikePost(postId, userId) {
+        return PostRepository.unlikePost(postId, userId)
     }
 }

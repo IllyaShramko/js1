@@ -31,7 +31,10 @@ export const PostController: PostControllerContract = {
             res.status(200).json(posts)
         })
     },
-    getById: (req, res) => {
+    getById: async (req, res) => {
+        const include = req.query.include
+        const includeArray = Array.isArray(include) ? include : (include ? [include] : [])
+        console.log(includeArray)
         if (!req.params.id){
             res.status(400).json("id is required");
             return
@@ -42,8 +45,13 @@ export const PostController: PostControllerContract = {
             res.status(400).json("id must be an integer");
             return;
         }
-      
-        res.json(PostService.getById(id))
+        const post = await PostService.getById(id, includeArray)
+            
+        if (!post) {
+            res.status(404).json("Post not found")
+            return
+        }
+        res.json(post)
 
     },
     createPost: async (req, res) => {
@@ -113,5 +121,41 @@ export const PostController: PostControllerContract = {
             }
             res.status(200).json(result)
         })
+    },
+    async commentPost(req, res) {
+        const postId = +req.params.postId
+        const userId = +req.body.userId
+        const content = req.body.body
+        try {
+            const newComment =  await PostService.commentPost(postId, userId, content)
+            if (!newComment) {
+                res.status(500).json("Comment creation failed.")
+                return
+            }
+            res.status(201).json(newComment)
+        } catch (error) {
+            res.status(500).json("Internal server error.")
+        }
+    },
+    async likePost(req, res) {
+        const postId = +req.params.postId
+        const userId = +req.params.userId
+        try {
+
+            await PostService.likePost(postId, userId)
+            res.status(200).json("Success")
+        } catch (error) {
+            res.status(500).json("Internal server error.")
+        }
+    },
+    async unlikePost(req, res) {
+        const postId = +req.params.postId
+        const userId = +req.params.userId
+        try {
+            await PostService.unlikePost(postId, userId)
+            res.status(200).json("Success")
+        } catch (error) {
+            res.status(500).json("Internal server error.")
+        }
     }
 }
