@@ -24,8 +24,24 @@ export const PostRepository: PostRepositoryContract = {
         })
         return products
     },
-    async createPost(data) {
-        return await PrismaClient.post.create({data})
+    async createPost(data, tagsIds) {
+        if (!tagsIds) {
+            return await PrismaClient.post.create({
+                data: data,
+                include: {tags:{ include: { tag: true }}}
+            })
+        }
+        return await PrismaClient.post.create({
+            data: {
+                ...data,
+                tags: { create:tagsIds.map((id) => ({
+                    tag: {
+                        connect: { id }
+                    }
+                }))}
+            },
+            include: {tags:{ include: { tag: true }}}
+        })
     },
     async update(id, data) {
         return await PrismaClient.post.update({

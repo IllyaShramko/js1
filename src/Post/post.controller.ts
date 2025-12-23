@@ -52,17 +52,17 @@ export const PostController: PostControllerContract = {
             res.status(422).json("Body is required.")
             return
         }
-        if (!body.name) {
+        if (!body.postData.name) {
             res.status(422).json("name is required.")
             return
         }
-        if (!body.description) {
+        if (!body.postData.description) {
             res.status(422).json("description is required.")
             return
         }
         try {
             const userId = res.locals.userId
-            const newPost = await PostService.createPost({...body, createdById: userId})
+            const newPost = await PostService.createPost({...body.postData, createdById: userId}, body.tagsIds)
             if (!newPost) {
                 res.status(404).json({message: "Post creation error"})
                 return
@@ -83,7 +83,7 @@ export const PostController: PostControllerContract = {
             return;
         }
         const body = req.body
-        await PostService.update(+id, body).then((post) => {
+        await PostService.update(+id, body.postData).then((post) => {
             if (!post) {
                 res.status(500).json("Post update error")
                 return

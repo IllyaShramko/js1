@@ -14,8 +14,8 @@ export const PostService: PostServiceContract = {
     getById: async (id) => {
         return PostRepository.getById(id)
     },
-    createPost: async (data) => {
-        return PostRepository.createPost(data)
+    createPost: async (data, tagsIds) => {
+        return PostRepository.createPost(data, tagsIds)
     },
     async update(id, data) {
         return PostRepository.update(id, data)

@@ -40,6 +40,7 @@ export const TagController: TagControllerContract = {
     },
     createTag: async (req, res) => {
         const body = req.body
+        console.log(body)
         if (!body) {
             res.status(422).json("Body is required.")
             return
