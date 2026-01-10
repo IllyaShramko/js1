@@ -124,9 +124,9 @@ export const PostController: PostControllerContract = {
     },
     async commentPost(req, res) {
         const postId = +req.params.postId
-        const userId = +req.body.userId
         const content = req.body.body
         try {
+            const userId = +res.locals.userId
             const newComment =  await PostService.commentPost(postId, userId, content)
             if (!newComment) {
                 res.status(500).json("Comment creation failed.")
